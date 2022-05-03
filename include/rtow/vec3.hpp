@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <concepts>
 #include <iomanip>
 #include <limits>
 #include <sstream>
@@ -7,7 +8,12 @@
 #include <type_traits>
 
 namespace rtow {
-template <typename T = double, std::enable_if_t<std::is_floating_point_v<T>, bool> = true>
+
+template <typename T1>
+concept IsFloating = std::is_floating_point_v<T1>;
+
+template <typename T = double>
+requires IsFloating<T>
 class Vec3 {
 public:
   static constexpr T NaN = std::numeric_limits<T>::quiet_NaN();
@@ -36,23 +42,11 @@ public:
   }
 
   template <typename T2>
-  Vec3<T> operator-(const Vec3<T2>& v1) const {
-    Vec3<T> v(this->x() - v1.x(), this->y() - v1.y(), this->z() - v1.z());
-    return v;
-  }
-
-  template <typename T2>
   Vec3<T>& operator+=(const Vec3<T2>& b) {
     this->x() = this->x() + b.x();
     this->y() = this->y() + b.y();
     this->z() = this->z() + b.z();
     return *this;
-  }
-
-  template <typename T2>
-  Vec3<T> operator+(const Vec3<T2>& b) const {
-    Vec3<T> v = {this->x() + b.x(), this->y() + b.y(), this->z() + b.z()};
-    return v;
   }
 
   template <typename T2>
@@ -64,9 +58,11 @@ public:
   }
 
   template <typename T2>
-  Vec3<T> operator*(const T2& c) const {
-    Vec3<T> v = {this->x() * c, this->y() * c, this->z() * c};
-    return v;
+  Vec3<T>& operator/=(const T2& c) {
+    this->x() = this->x() / c;
+    this->y() = this->y() / c;
+    this->z() = this->z() / c;
+    return *this;
   }
 
   T norm() const { return std::sqrt(data_[0] * data_[0] + data_[1] * data_[1] + data_[2] * data_[2]); }
@@ -84,8 +80,5 @@ public:
 private:
   T data_[3] = {NaN, NaN, NaN};
 };
-
-using Vec3d = Vec3<double>;
-using Vec3f = Vec3<float>;
 
 }  // namespace rtow

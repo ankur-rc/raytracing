@@ -1,7 +1,8 @@
 #include <iostream>
 #include <vector>
 
-#include "rtow/vec3.h"
+#include "rtow/vec3.hpp"
+#include "rtow/vec3_utils.hpp"
 
 int main(int argc, char** argv) {
   const std::vector<rtow::Vec3d> v = {{1.}, {1., -2., 3.}};
@@ -13,7 +14,7 @@ int main(int argc, char** argv) {
               << "-v   =" << (-v[i]).Print() << "\n"
               << "v-v  =" << (v[i] - v[i]).Print() << "\n"
               << "v+v  =" << (v[i] + v[i]).Print() << "\n"
-              << "v*3  =" << (v[i] * 3).Print() << "\n\n";
+              << "v*3  =" << (v[i] * 3.0).Print() << "\n\n";
   }
 
   return 0;
