@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
 
-#include "rtow/vec3.hpp"
-#include "rtow/vec3_utils.hpp"
+// #include "rtow/vec.hpp"
+#include "rtow/vec_utils.hpp"
 
 int main(int argc, char** argv) {
   const std::vector<rtow::Vec3d> v = {{1.}, {1., -2., 3.}, {1, 0, 0}};

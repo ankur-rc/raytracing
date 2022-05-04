@@ -1,4 +1,4 @@
-#include "rtow/vec3_utils.hpp"
+#include "rtow/vec_utils.hpp"
 
 namespace rtow {
 using color = Vec3f;
