@@ -30,6 +30,11 @@ public:
   T x() const { return data_[0]; }
   T y() const { return data_[1]; }
   T z() const { return data_[2]; }
+
+  T& x() { return data_[0]; }
+  T& y() { return data_[1]; }
+  T& z() { return data_[2]; }
+
   const T* data() const { return data_; }
   T* data() { return data_; }
 
