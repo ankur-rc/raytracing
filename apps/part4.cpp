@@ -11,9 +11,10 @@
 using namespace rtow;
 
 color ray_color(const Rayf& r) {
-  const Vec3f dir = normalize(r.direction());
-  const float t = 0.5 * (dir.y() + 1.);
-  return color(1.) * (1.f - t) + color(0.5f, 0.7f, 1.f) * t;
+  Vec3f dir = normalize(r.direction());
+  dir /= dir.z();
+  const float t = 0.5 * dir.y();
+  return color(1.) * t + color(0.5f, 0.7f, 1.f) * (1.f - t);
 }
 
 int main() {
@@ -21,8 +22,8 @@ int main() {
   std::ofstream out(file_path, std::ios_base::out);
   std::ostream& logging = std::cout;
 
-  const size_t width = 1024;
-  const size_t height = 768;
+  const size_t width = 1920;
+  const size_t height = 1080;
 
   // image
   Image img = {width, height, PIXEL_FORMAT::RGB};
