@@ -50,10 +50,10 @@ public:
   T& y() requires IsVec3<N> || IsVec2<N> { return data_[1]; }
   T& z() requires IsVec3<N> { return data_[2]; }
 
-  const T* data() const { return data_; }
-  T* data() { return data_; }
+  const T* data() const { return data_.data(); }
+  T* data() { return data_.data(); }
 
-  T operator[](const size_t i) const { return data_[i]; }
+  const T& operator[](const size_t i) const { return data_[i]; }
   T& operator[](const size_t i) { return data_[i]; }
 
   Vec<T, N> operator-() const {

@@ -69,11 +69,11 @@ inline T dot(const Vec<T, N>& v1, const Vec<T, N>& v2) {
 template <typename T2>
 inline Vec3<T2> cross(const Vec3<T2>& v1, const Vec3<T2>& v2) {
   // clang-format off
-    Vec3<T2> v = {
-        v1.y()*v2.z() - v1.z()*v2.y(),
-        v1.z()*v2.x() - v1.x()*v2.z(),
-        v1.x()*v2.y() - v1.y()*v2.x()
-    };
+  Vec3<T2> v = {
+       v1.y()*v2.z() - v1.z()*v2.y(),
+       v1.z()*v2.x() - v1.x()*v2.z(),
+       v1.x()*v2.y() - v1.y()*v2.x()
+  };
   // clang-format on
 
   return v;
