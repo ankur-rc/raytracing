@@ -14,13 +14,8 @@ target_link_libraries(test_vec3 rtow)
 set_property(TARGET test_vec3 PROPERTY CXX_STANDARD 20)
 
 # apps
-add_executable(gradient apps/gradient.cpp)
-target_link_libraries(gradient rtow pthread)
-set_property(TARGET gradient PROPERTY CXX_STANDARD 20)
+add_subdirectory(apps)
 
-add_executable(part4 apps/part4.cpp)
-target_link_libraries(part4 rtow pthread)
-set_property(TARGET part4 PROPERTY CXX_STANDARD 20)
 
 
 

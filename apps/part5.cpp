@@ -6,18 +6,23 @@
 #include "rtow/camera.hpp"
 #include "rtow/color.h"
 #include "rtow/image.h"
+#include "rtow/sphere.hpp"
 #include "rtow/vec_utils.hpp"
 
 using namespace rtow;
 
 color ray_color(const Rayf& r) {
+  if (hit_sphere(Vec3f{0., 0., 1.}, 0.5f, r)) {
+    return color{1., 0., 0.};
+  }
+
   const Vec3f dir = normalize(r.direction());
   const float t = (dir.y() + .5f);
   return color(1.) * t + color(0.5f, 0.7f, 1.f) * (1.f - t);
 }
 
 int main() {
-  std::string file_path = "part4.ppm";
+  std::string file_path = "part5.ppm";
   std::ofstream out(file_path, std::ios_base::out);
   std::ostream& logging = std::cout;
 
@@ -32,8 +37,8 @@ int main() {
   }
 
   // camera
-  const float fx = width;
-  const float fy = width;
+  const float fx = width / 4.;
+  const float fy = width / 4.;
   const float cx = width / 2.;
   const float cy = height / 2.;
   const float s = 0;
