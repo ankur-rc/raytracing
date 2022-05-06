@@ -1,7 +1,7 @@
 #pragma once
 
+#include "rtow/utils.hpp"
 #include "rtow/vec.hpp"
-
 namespace rtow {
 template <typename T>
 using Vec3 = Vec<T, 3>;

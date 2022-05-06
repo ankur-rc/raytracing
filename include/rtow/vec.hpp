@@ -8,6 +8,8 @@
 #include <string>
 #include <type_traits>
 
+#include "rtow/utils.hpp"
+
 namespace rtow {
 
 template <typename T1>
@@ -96,9 +98,28 @@ public:
     return sum;
   }
 
+  bool has_NaN() const {
+    for (size_t i = 0; i < N; ++i) {
+      if (std::isnan(data_[i])) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   T norm() const { return std::sqrt(norm_squared()); }
 
-  static Vec<T, N> Constant(const T& constant) { return Vec<T, N>(constant); }
+  static Vec<T, N> constant(const T& constant) { return Vec<T, N>(constant); }
+
+  static Vec<T, N> random(const T min, const T max) {
+    Vec<T, N> v;
+    for (size_t i = 0; i < N; ++i) {
+      v[i] = rtow::random(min, max);
+    }
+
+    return v;
+  }
 
   std::string Print(size_t precison = 4) const {
     std::stringstream ss;

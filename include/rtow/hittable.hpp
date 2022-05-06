@@ -9,7 +9,7 @@ namespace rtow {
 template <typename T>
 struct HitRecord {
   Vec3<T> p;
-  Vec3<T> n;  // always points aginst the direction of the ray
+  Vec3<T> n;  // always points against the direction of the ray
   T t = std::numeric_limits<T>::quiet_NaN();
   bool front_face = true;
 
