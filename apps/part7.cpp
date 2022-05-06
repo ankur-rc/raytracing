@@ -5,15 +5,18 @@
 
 #include "rtow/camera.hpp"
 #include "rtow/color.h"
+#include "rtow/hittable.hpp"
 #include "rtow/image.h"
 #include "rtow/sphere.hpp"
+#include "rtow/utils.hpp"
 #include "rtow/vec_utils.hpp"
 
 using namespace rtow;
 
-color ray_color(const Rayf& r) {
-  if (hit_sphere(Vec3f{0., 0., 1.}, 0.5f, r)) {
-    return color{1., 0., 0.};
+color ray_color(const Rayf& r, const HittableList<float>& world) {
+  HitRecord<float> record;
+  if (world.hit(r, 0., 100., record)) {
+    return (color{1., 1., 1.} + record.n) * 0.5f;
   }
 
   const Vec3f dir = normalize(r.direction());
@@ -22,12 +25,13 @@ color ray_color(const Rayf& r) {
 }
 
 int main() {
-  std::string file_path = "part5.ppm";
+  std::string file_path = "part7.ppm";
   std::ofstream out(file_path, std::ios_base::out);
   std::ostream& logging = std::cout;
 
-  const size_t width = 1920;
-  const size_t height = 1080;
+  const size_t width = 480;
+  const size_t height = 360;
+  constexpr size_t kSpp = 100;
 
   // image
   Image img = {width, height, PIXEL_FORMAT::RGB};
@@ -53,15 +57,24 @@ int main() {
   std::shared_ptr<Camera<>> camera = std::make_shared<PinholeCamera<>>(
       static_cast<float>(width), static_cast<float>(height), parameters.data());
 
+  // define scene
+  rtow::HittableList<float> world;
+  world.add(std::make_shared<rtow::Sphere<float>>(Vec3f{0., 0., 1.}, 0.5));
+  world.add(std::make_shared<rtow::Sphere<float>>(Vec3f{0., 100.5, 1.}, 100.));
+
   // render
   const int64_t time_start = std::chrono::system_clock::now().time_since_epoch().count();
   for (size_t i = 0; i < img.height(); ++i) {
     for (size_t j = 0; j < img.width(); ++j) {
-      {
-        rtow::color& col = img.at(j, i);
-        const auto ray = camera->unproject({static_cast<float>(j), static_cast<float>(i)});
-        col = ray_color(ray);
+      rtow::color& col = img.at(j, i);
+      col = color(0.F);
+      for (size_t k = 0; k < kSpp; ++k) {
+        const float ej = static_cast<float>(j) + rtow::random(0.F, 1.F);
+        const float ei = static_cast<float>(i) + rtow::random(0.F, 1.F);
+        const auto ray = camera->unproject({ej, ei});
+        col += ray_color(ray, world);
       }
+      col /= kSpp;
     }
   }
   const int64_t time_end = std::chrono::system_clock::now().time_since_epoch().count();
