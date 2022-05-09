@@ -7,26 +7,33 @@
 #include "rtow/color.h"
 #include "rtow/hittable.hpp"
 #include "rtow/image.h"
+#include "rtow/material.hpp"
 #include "rtow/sphere.hpp"
 #include "rtow/utils.hpp"
 #include "rtow/vec_utils.hpp"
 
 using namespace rtow;
 
-color ray_color(const Rayf& r, const HittableList<float>& world, const size_t recursion_depth) {
+color ray_color(const Rayf& r, const HittableList<float>& world, const size_t max_bounces) {
   HitRecord<float> record;
-  Rayf outgoing_ray = r;
-  size_t depth = recursion_depth;
-  color col = {1.F};
+  Rayf ray_out, ray_in = r;
+
+  size_t depth = max_bounces;
+  color attenuation, col = {1.F};
   bool hit_once = false;
 
   while (depth > 0) {
-    if (world.hit(outgoing_ray, 0.01, 1000., record)) {
-      const Vec3f outgoing_direction = record.p + record.n + normalize(Vec3f::random(-1.F, 1.F));
-      outgoing_ray = {record.p, outgoing_direction - record.p};
-      col *= 0.5F;
-      depth = depth - 1;
+    if (world.hit(ray_in, 0.001, 1000., record)) {
       hit_once = true;
+      if (record.material_ptr->scatter(ray_in, record, attenuation, ray_out)) {
+        col *= attenuation;
+        ray_in = ray_out;
+        depth = depth - 1;
+      } else {
+        // light ray got absorbed
+        col *= attenuation;
+        break;
+      }
     } else {
       // no-hit
       break;
@@ -44,14 +51,14 @@ color ray_color(const Rayf& r, const HittableList<float>& world, const size_t re
 }
 
 int main() {
-  std::string file_path = "part8.ppm";
+  std::string file_path = "part9.ppm";
   std::ofstream out(file_path, std::ios_base::out);
   std::ostream& logging = std::cout;
 
   const size_t width = 480;
   const size_t height = 360;
   constexpr size_t kSpp = 64;
-  constexpr size_t kRayBounces = 16;
+  constexpr size_t kRayBounces = 100;
 
   // image
   Image img = {width, height, PIXEL_FORMAT::RGB};
@@ -65,7 +72,7 @@ int main() {
   const float fy = width / 4.;
   const float cx = width / 2.;
   const float cy = height / 2.;
-  const float s = 0;
+  const float s = 0.;
 
   Vec<float, 5> parameters(Vec<float, 5>::NaN);
   parameters[0] = fx;
@@ -77,10 +84,18 @@ int main() {
   std::shared_ptr<Camera<>> camera = std::make_shared<PinholeCamera<>>(
       static_cast<float>(width), static_cast<float>(height), parameters.data());
 
-  // define scene
+  // materials
+  auto mat_ground = std::make_shared<rtow::Lambertian<float>>(rtow::color{0.8, 0.8, 0.0});
+  auto mat_center = std::make_shared<rtow::Lambertian<float>>(rtow::color{0.7, 0.3, 0.3});
+  auto mat_left = std::make_shared<rtow::Metal<float>>(rtow::color{0.8, 0.8, 0.8}, 0.8);
+  auto mat_right = std::make_shared<rtow::Metal<float>>(rtow::color{0.8, 0.6, 0.2}, 0.1);
+
+  // objects
   rtow::HittableList<float> world;
-  world.add(std::make_shared<rtow::Sphere<float>>(Vec3f{0., 0., 1.}, 0.5));
-  world.add(std::make_shared<rtow::Sphere<float>>(Vec3f{0., 100.5, 1.}, 100.));
+  world.add(std::make_shared<rtow::Sphere<float>>(Vec3f{0., 100.5, 1.}, 100., mat_ground));
+  world.add(std::make_shared<rtow::Sphere<float>>(Vec3f{0., 0., 1.}, 0.5, mat_center));
+  world.add(std::make_shared<rtow::Sphere<float>>(Vec3f{-1., 0., 1.}, 0.5, mat_left));
+  world.add(std::make_shared<rtow::Sphere<float>>(Vec3f{1., 0., 1.}, 0.5, mat_right));
 
   // render
   const int64_t time_start = std::chrono::system_clock::now().time_since_epoch().count();
@@ -112,7 +127,7 @@ int main() {
 
   logging << "\nTook " << (time_end - time_start) * 1e-6 << "ms to complete rendering\n";
 
-  logging << "Writing image ...\n";
+  logging << "Writing image ...";
   rtow::to_ppm(img, out, logging);
   logging << "completed\n";
 }

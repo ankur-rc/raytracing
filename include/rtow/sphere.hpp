@@ -8,8 +8,9 @@ namespace rtow {
 template <typename T = float>
 class Sphere : public Hittable<T> {
 public:
-  Sphere(const Vec3<T>& center, const T radius)
-      : center_(center)
+  Sphere(const Vec3<T>& center, const T radius, const std::shared_ptr<Material<T>>& material_ptr)
+      : Hittable<T>(material_ptr)
+      , center_(center)
       , radius_(radius) {}
 
   bool hit(const Ray<T>& ray, const T t_min, const T t_max, HitRecord<T>& record) const override {
@@ -33,7 +34,7 @@ public:
     // update hit record
     const Vec3<T> p = ray.at(root);
     const Vec3<T> outside_normal = normalize(p - center_);
-    record.Update(p, outside_normal, root, ray);
+    record.Update(p, outside_normal, root, ray, this->material_ptr_);
 
     return true;
   }

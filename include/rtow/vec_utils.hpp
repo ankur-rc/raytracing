@@ -48,7 +48,17 @@ inline Vec<T, N> operator+(const Vec<T, N>& v1, const Vec<T, N>& v2) {
 }
 
 template <typename T, size_t N>
+inline Vec<T, N> operator*(const Vec<T, N>& v1, const Vec<T, N>& v2) {
+  return compose(v1, v2, std::multiplies<T>{});
+}
+
+template <typename T, size_t N>
 inline Vec<T, N> operator*(const Vec<T, N>& v1, const T& c) {
+  return compose(v1, Vec<T, N>(c), std::multiplies<T>{});
+}
+
+template <typename T, size_t N>
+inline Vec<T, N> operator*(const T& c, const Vec<T, N>& v1) {
   return compose(v1, Vec<T, N>(c), std::multiplies<T>{});
 }
 
@@ -82,6 +92,29 @@ inline Vec3<T2> cross(const Vec3<T2>& v1, const Vec3<T2>& v2) {
 template <typename T, size_t N>
 inline Vec<T, N> normalize(const Vec<T, N>& v) {
   return v / v.norm();
+}
+
+template <typename T>
+inline Vec<T, 3> random_in_unit_sphere() {
+  while (true) {
+    auto p = Vec<T, 3>::random(T(-1), T(1));
+    auto norm2 = p.norm_squared();
+    if (norm2 > T(1) || norm2 < T(1e-6)) continue;
+    return normalize(p);
+  }
+}
+template <typename T>
+inline Vec<T, 3> random_in_hemisphere(const Vec<T, 3>& normal) {
+  Vec<T, 3> in_unit_sphere = random_in_unit_sphere<T>();
+  if (dot(in_unit_sphere, normal) > 0.0)  // In the same hemisphere as the normal
+    return in_unit_sphere;
+  else
+    return -in_unit_sphere;
+}
+
+template <typename T>
+Vec3<T> reflect(const Vec3<T>& v, const Vec3<T>& n) {
+  return v + T(2) * dot(v, n) * n;
 }
 
 }  // namespace rtow

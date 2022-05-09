@@ -82,6 +82,13 @@ public:
     return *this;
   }
 
+  Vec<T, N>& operator*=(const Vec<T, N>& v) {
+    for (size_t i = 0; i < N; ++i) {
+      this->data_[i] *= v[i];
+    }
+    return *this;
+  }
+
   template <typename T2>
   Vec<T, N>& operator/=(const T2& c) {
     for (size_t i = 0; i < N; ++i) {

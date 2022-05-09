@@ -6,6 +6,7 @@ namespace rtow {
 template <typename T>
 class Ray {
 public:
+  Ray() = default;
   Ray(const Vec3<T>& origin, const Vec3<T>& direction)
       : origin_(origin)
       , direction_(direction) {}

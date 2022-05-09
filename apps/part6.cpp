@@ -56,9 +56,11 @@ int main() {
       static_cast<float>(width), static_cast<float>(height), parameters.data());
 
   // define scene
+  // std::shared_ptr<rtow::Material<float>> mat_ground = std::make_shared
+
   rtow::HittableList<float> world;
   world.add(std::make_shared<rtow::Sphere<float>>(Vec3f{0., 0., 1.}, 0.5));
-  world.add(std::make_shared<rtow::Sphere<float>>(Vec3f{0., 100.5, 1.}, 100.));
+  world.add(std::make_shared<rtow::Sphere<float>>(Vec3f{0., 100.25, 1.}, 100.));
 
   // render
   const int64_t time_start = std::chrono::system_clock::now().time_since_epoch().count();
