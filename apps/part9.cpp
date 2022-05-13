@@ -50,15 +50,57 @@ color ray_color(const Rayf& r, const HittableList<float>& world, const size_t ma
   return color(1.) * t + color(0.5f, 0.7f, 1.f) * (1.f - t);
 }
 
-int main() {
+int main(int argc, char** argv) {
+  struct Profile {
+    std::string name = "undefined";
+    size_t width = 480;
+    size_t height = 360;
+    size_t samples_per_pixel = 64;
+    size_t max_ray_bounces = 100;
+    std::string string() {
+      std::stringstream ss;
+      ss << "Name: " << name << "\n"
+         << "Width: " << width << "\n"
+         << "Height: " << height << "\n"
+         << "Samples per pixel: " << samples_per_pixel << "\n"
+         << "Max bounces: " << max_ray_bounces << "\n";
+      return ss.str();
+    }
+  };
+
+  // clang-format off
+  const Profile low    = {.name = "low",    .width = 160,  .height = 128,  .samples_per_pixel = 16,  .max_ray_bounces = 10 };
+  const Profile medium = {.name = "medium", .width = 480,  .height = 360,  .samples_per_pixel = 64,  .max_ray_bounces = 100 };
+  const Profile high   = {.name = "high",   .width = 1920, .height = 1080, .samples_per_pixel = 256, .max_ray_bounces = 1000 };
+  // clang-format on
+
+  Profile selected_profile = low;
+  if (argc > 1) {
+    std::string profile = std::string(argv[1]);
+    if (profile == "--low" || profile == "-l") {
+      selected_profile = low;
+    } else if (profile == "--medium" || profile == "-m") {
+      selected_profile = medium;
+    } else if (profile == "--high" || profile == "-h") {
+      selected_profile = high;
+    }
+  }
+
   std::string file_path = "part9.ppm";
-  std::ofstream out(file_path, std::ios_base::out);
   std::ostream& logging = std::cout;
 
-  const size_t width = 480;
-  const size_t height = 360;
-  constexpr size_t kSpp = 64;
-  constexpr size_t kRayBounces = 100;
+  file_path = file_path.substr(0, file_path.find_first_of('.'))
+                  .append("-")
+                  .append(selected_profile.name)
+                  .append(".ppm");
+  std::ofstream out(file_path, std::ios_base::out);
+
+  const size_t width = selected_profile.width;
+  const size_t height = selected_profile.height;
+  const size_t kSpp = selected_profile.samples_per_pixel;
+  const size_t kRayBounces = selected_profile.max_ray_bounces;
+
+  logging << "Saving to file: " << file_path << " using profile: \n" << selected_profile.string();
 
   // image
   Image img = {width, height, PIXEL_FORMAT::RGB};
@@ -85,7 +127,7 @@ int main() {
       static_cast<float>(width), static_cast<float>(height), parameters.data());
 
   // materials
-  auto mat_ground = std::make_shared<rtow::Lambertian<float>>(rtow::color{0.8, 0.8, 0.0});
+  auto mat_ground = std::make_shared<rtow::Lambertian<float>>(rtow::color{0.5, 0.5, 0.0});
   auto mat_center = std::make_shared<rtow::Lambertian<float>>(rtow::color{0.7, 0.3, 0.3});
   auto mat_left = std::make_shared<rtow::Metal<float>>(rtow::color{0.8, 0.8, 0.8}, 1.0);
   auto mat_right = std::make_shared<rtow::Metal<float>>(rtow::color{0.8, 0.6, 0.2}, 0.0);
