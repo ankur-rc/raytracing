@@ -31,7 +31,7 @@ color ray_color(const Rayf& r, const HittableList<float>& world, const size_t ma
         depth = depth - 1;
       } else {
         // light ray got absorbed
-        col *= attenuation;
+        col = {0.F};
         break;
       }
     } else {
@@ -87,8 +87,8 @@ int main() {
   // materials
   auto mat_ground = std::make_shared<rtow::Lambertian<float>>(rtow::color{0.8, 0.8, 0.0});
   auto mat_center = std::make_shared<rtow::Lambertian<float>>(rtow::color{0.7, 0.3, 0.3});
-  auto mat_left = std::make_shared<rtow::Metal<float>>(rtow::color{0.8, 0.8, 0.8}, 0.8);
-  auto mat_right = std::make_shared<rtow::Metal<float>>(rtow::color{0.8, 0.6, 0.2}, 0.1);
+  auto mat_left = std::make_shared<rtow::Metal<float>>(rtow::color{0.8, 0.8, 0.8}, 1.0);
+  auto mat_right = std::make_shared<rtow::Metal<float>>(rtow::color{0.8, 0.6, 0.2}, 0.0);
 
   // objects
   rtow::HittableList<float> world;
@@ -118,9 +118,9 @@ int main() {
       }
       col /= kSpp;
       // gamma correction
-      col.x() = std::sqrt(col.x());
-      col.y() = std::sqrt(col.y());
-      col.z() = std::sqrt(col.z());
+      col.x() = std::pow(col.x(), 0.4);
+      col.y() = std::pow(col.y(), 0.4);
+      col.z() = std::pow(col.z(), 0.4);
     }
   }
   const int64_t time_end = std::chrono::system_clock::now().time_since_epoch().count();

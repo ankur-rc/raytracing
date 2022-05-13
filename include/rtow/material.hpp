@@ -39,13 +39,13 @@ template <typename T>
 class Metal : public Material<T> {
 public:
   Metal(const color& albedo, const T fuzz_factor)
-      : albedo_(albedo) {}
+      : albedo_(albedo)
+      , fuzz_factor_(fuzz_factor) {}
 
   bool scatter(const Ray<T>& ray_in, const HitRecord<T>& hit_record, color& attenuation,
                Ray<T>& ray_out) const override {
-    const Vec3<T> reflected = reflect(normalize(ray_in.direction()), hit_record.n);
-    // ray_out = {hit_record.p, (reflected + fuzz_factor_ * random_in_unit_sphere<T>())};
-    ray_out = {hit_record.p, reflected};
+    const Vec3<T> reflected = reflect(ray_in.direction(), hit_record.n);
+    ray_out = {hit_record.p, (reflected + fuzz_factor_ * random_in_unit_sphere<T>())};
     attenuation = albedo_;
     return (dot(ray_out.direction(), hit_record.n) > T(0.0001));
   }

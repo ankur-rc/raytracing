@@ -114,7 +114,7 @@ inline Vec<T, 3> random_in_hemisphere(const Vec<T, 3>& normal) {
 
 template <typename T>
 Vec3<T> reflect(const Vec3<T>& v, const Vec3<T>& n) {
-  return v + T(2) * dot(v, n) * n;
+  return v.norm() * (normalize(v) + T(2) * normalize(n));
 }
 
 }  // namespace rtow
