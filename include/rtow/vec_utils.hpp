@@ -3,16 +3,6 @@
 #include "rtow/utils.hpp"
 #include "rtow/vec.hpp"
 namespace rtow {
-template <typename T>
-using Vec3 = Vec<T, 3>;
-
-template <typename T>
-using Vec2 = Vec<T, 2>;
-
-using Vec3d = Vec3<double>;
-using Vec3f = Vec3<float>;
-using Vec2d = Vec2<double>;
-using Vec2f = Vec2<float>;
 
 template <typename T1, typename T2>
 concept Derived = std::is_base_of_v<T1, T2>;
@@ -97,7 +87,7 @@ inline Vec<T, N> normalize(const Vec<T, N>& v) {
 template <typename T>
 inline Vec<T, 3> random_in_unit_sphere() {
   while (true) {
-    auto p = Vec<T, 3>::random(T(-1), T(1));
+    auto p = Vec<T, 3>::random(T(-1), T(1));  // https://mathworld.wolfram.com/SpherePointPicking.html
     auto norm2 = p.norm_squared();
     if (norm2 > T(1) || norm2 < T(1e-6)) continue;
     return normalize(p);
@@ -115,6 +105,14 @@ inline Vec<T, 3> random_in_hemisphere(const Vec<T, 3>& normal) {
 template <typename T>
 Vec3<T> reflect(const Vec3<T>& v, const Vec3<T>& n) {
   return v.norm() * (normalize(v) + T(2) * normalize(n));
+}
+
+template <typename T>
+Vec3<T> refract(const Vec3<T>& ray_in, const Vec3<T>& normal, const T eta_in, const T eta_out) {
+  const T ct = std::min(dot(-ray_in, normal), T(1));
+  const Vec3<T> ray_out_perpendicular = (eta_in / eta_out) * (ray_in + ct * normal);
+  const Vec3<T> ray_out_parallel = -std::sqrt(std::abs(T(1) - ray_out_perpendicular.norm_squared())) * normal;
+  return ray_out_perpendicular + ray_out_parallel;
 }
 
 }  // namespace rtow

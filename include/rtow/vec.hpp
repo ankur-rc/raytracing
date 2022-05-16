@@ -143,4 +143,15 @@ private:
   std::array<T, N> data_;
 };
 
+template <typename T>
+using Vec3 = Vec<T, 3>;
+
+template <typename T>
+using Vec2 = Vec<T, 2>;
+
+using Vec3d = Vec3<double>;
+using Vec3f = Vec3<float>;
+using Vec2d = Vec2<double>;
+using Vec2f = Vec2<float>;
+
 }  // namespace rtow

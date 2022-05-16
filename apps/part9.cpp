@@ -128,8 +128,10 @@ int main(int argc, char** argv) {
 
   // materials
   auto mat_ground = std::make_shared<rtow::Lambertian<float>>(rtow::color{0.5, 0.5, 0.0});
-  auto mat_center = std::make_shared<rtow::Lambertian<float>>(rtow::color{0.7, 0.3, 0.3});
-  auto mat_left = std::make_shared<rtow::Metal<float>>(rtow::color{0.8, 0.8, 0.8}, 1.0);
+  // auto mat_center = std::make_shared<rtow::Lambertian<float>>(rtow::color{0.7, 0.3, 0.3});
+  // auto mat_left = std::make_shared<rtow::Metal<float>>(rtow::color{0.8, 0.8, 0.8}, 1.0);
+  auto mat_center = std::make_shared<rtow::Dielectric<float>>(1.5F);
+  auto mat_left = std::make_shared<rtow::Dielectric<float>>(1.2F);
   auto mat_right = std::make_shared<rtow::Metal<float>>(rtow::color{0.8, 0.6, 0.2}, 0.0);
 
   // objects

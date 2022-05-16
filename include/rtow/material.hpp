@@ -55,4 +55,24 @@ private:
   T fuzz_factor_ = T(0);
 };
 
+template <typename T>
+class Dielectric : public Material<T> {
+public:
+  Dielectric(const T refractive_index)
+      : refractive_index_(refractive_index) {}
+
+  bool scatter(const Ray<T>& ray_in, const HitRecord<T>& hit_record, color& attenuation,
+               Ray<T>& ray_out) const override {
+    attenuation = color(1.0);
+    const T eta_in = hit_record.front_face ? T(1) : refractive_index_;
+    const T eta_out = hit_record.front_face ? refractive_index_ : T(1);
+    const Vec3<T> refracted_ray = refract(normalize(ray_in.direction()), hit_record.n, eta_in, eta_out);
+    ray_out = {hit_record.p, refracted_ray};
+    return true;
+  }
+
+private:
+  T refractive_index_ = T(1);
+};
+
 }  // namespace rtow
