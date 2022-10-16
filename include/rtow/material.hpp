@@ -66,13 +66,32 @@ public:
     attenuation = color(1.0);
     const T eta_in = hit_record.front_face ? T(1) : refractive_index_;
     const T eta_out = hit_record.front_face ? refractive_index_ : T(1);
-    const Vec3<T> refracted_ray = refract(normalize(ray_in.direction()), hit_record.n, eta_in, eta_out);
-    ray_out = {hit_record.p, refracted_ray};
+
+    const Vec3<T> unit_dir = normalize(ray_in.direction());
+    const T ct = std::min(dot(-unit_dir, hit_record.n), T(1));
+    const T st = std::sqrt(T(1) - ct * ct);
+    const bool do_reflect = ((eta_in / eta_out) * st) > T(1);
+
+    if (do_reflect || reflectance(ct, refractive_index_) > random(T(0), T(1))) {
+      const Vec3<T> reflected_dir = reflect(ray_in.direction(), hit_record.n);
+      ray_out = {hit_record.p, reflected_dir};
+    } else {
+      const Vec3<T> refracted_dir = refract(normalize(ray_in.direction()), hit_record.n, eta_in, eta_out);
+      ray_out = {hit_record.p, refracted_dir};
+    }
+
     return true;
   }
 
 private:
   T refractive_index_ = T(1);
+
+  static T reflectance(const T ct, const T refractive_index) {
+    // use Schlick's approximation for reflectance
+    const T r0 = (T(1) - refractive_index) / (T(1) + refractive_index);
+    const T r2 = r0 * r0;
+    return r2 + (1 - r2) * std::pow((T(1) - ct), T(5));
+  }
 };
 
 }  // namespace rtow
