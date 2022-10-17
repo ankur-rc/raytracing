@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
                   .append("-")
                   .append(selected_profile.name)
                   .append(".ppm");
-  std::ofstream out(file_path, std::ios_base::out);
+  std::ofstream out(file_path, std::ios_base::out | std::ios_base::trunc);
 
   const size_t width = selected_profile.width;
   const size_t height = selected_profile.height;
@@ -108,6 +108,10 @@ int main(int argc, char** argv) {
   if (!img.alloc()) {
     std::cerr << "Failed to allocate image data\n";
     return -1;
+  }
+  {
+    std::ofstream out(file_path, std::ios_base::out);
+    to_ppm(img, out);
   }
 
   // camera
@@ -128,9 +132,9 @@ int main(int argc, char** argv) {
       static_cast<float>(width), static_cast<float>(height), parameters.data());
 
   // camera pose
-  Vec3f cam_position = {0., -1.5, -0.8};
+  Vec3f cam_position = {0., -1.5, -1.8};
+  Vec3f cam_at = {0.02, -0.08, 0.};
   Vec3f cam_up = {0., 1., 0.};
-  Vec3f cam_at = {0., -0.08, 0.};
 
   // rtow::pose<> pose_world_camera = {{0., -0.5, -0.8, -0.1, 0., 0.}};
   const rtow::pose<> pose_world_camera = rtow::LookAt(cam_position, cam_at, cam_up);
@@ -178,12 +182,16 @@ int main(int argc, char** argv) {
       col.y() = std::pow(col.y(), 0.4);
       col.z() = std::pow(col.z(), 0.4);
     }
+    {
+      std::ofstream out(file_path, std::ios_base::out);
+      rtow::to_ppm(img, out, logging);
+    }
   }
   const int64_t time_end = std::chrono::system_clock::now().time_since_epoch().count();
 
   logging << "\nTook " << (time_end - time_start) * 1e-6 << "ms to complete rendering\n";
 
-  logging << "Writing image ...";
-  rtow::to_ppm(img, out, logging);
+  // logging << "Writing image ...";
+  // rtow::to_ppm(img, out, logging);
   logging << "completed\n";
 }

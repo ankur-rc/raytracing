@@ -1,8 +1,8 @@
 #include "rtow/image.h"
 
 namespace rtow {
-void to_ppm(const Image& image, std::ostream& out, std::ostream& log) {
-  out << "P3\n" << image.width() << " " << image.height() << "\n255\n";
+void to_ppm(const Image& image, std::ostream& out, std::ostream& log, bool write_header) {
+  if (write_header) out << "P3\n" << image.width() << " " << image.height() << "\n255\n";
 
   const size_t width = image.width();
   const size_t height = image.height();
@@ -14,7 +14,7 @@ void to_ppm(const Image& image, std::ostream& out, std::ostream& log) {
       const color& col = image.data()[i * width + j];
       //   log << "color at " << i << ", " << j << ": " << col.Print() << "\n";
       // Divide the color by the number of samples and gamma-correct for gamma=2.0.
-      
+
       write_color(out, col);
     }
   }

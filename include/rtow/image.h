@@ -15,7 +15,7 @@ struct Image {
       , pf_(pf) {}
 
   bool alloc() {
-    data_.resize(width_ * height_);
+    data_.resize(width_ * height_, color::constant(0.));
     return true;
   }
 
@@ -37,5 +37,5 @@ private:
   PIXEL_FORMAT pf_ = PIXEL_FORMAT::UNKNOWN;
 };
 
-void to_ppm(const Image& image, std::ostream& out, std::ostream& log = std::cout);
+void to_ppm(const Image& image, std::ostream& out, std::ostream& log = std::cout, bool write_header = true);
 }  // namespace rtow
