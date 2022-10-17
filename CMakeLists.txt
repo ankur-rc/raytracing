@@ -13,6 +13,10 @@ add_executable(test_vec3 test/test_vec3.cpp)
 target_link_libraries(test_vec3 rtow)
 set_property(TARGET test_vec3 PROPERTY CXX_STANDARD 20)
 
+add_executable(test_matrix test/test_matrix.cpp)
+target_link_libraries(test_matrix rtow)
+set_property(TARGET test_matrix PROPERTY CXX_STANDARD 20)
+
 # apps
 add_subdirectory(apps)
 

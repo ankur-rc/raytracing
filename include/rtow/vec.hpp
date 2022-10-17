@@ -33,6 +33,12 @@ public:
     }
   }
 
+  Vec(const std::array<T, N>& l) {
+    for (size_t i = 0; i < N; ++i) {
+      this->data_[i] = std::data(l)[i];
+    }
+  }
+
   Vec(const T x, const T y) requires IsVec2<N> {
     data_[0] = x;
     data_[1] = y;
@@ -134,7 +140,7 @@ public:
     for (size_t i = 0; i < N - 1; ++i) {
       ss << std::to_string(data_[i]) << ", ";
     }
-    ss << data_[N - 1] << " ]";
+    ss << std::to_string(data_[N - 1]) << " ]";
 
     return ss.str();
   }
