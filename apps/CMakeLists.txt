@@ -14,6 +14,10 @@ set_property(TARGET part4 PROPERTY CXX_STANDARD 20)
 # target_link_libraries(part7 rtow pthread)
 # set_property(TARGET part7 PROPERTY CXX_STANDARD 20)
 
-add_executable(part9 part9.cpp)
-target_link_libraries(part9 rtow pthread)
-set_property(TARGET part9 PROPERTY CXX_STANDARD 20)
+# add_executable(part9 part9.cpp)
+# target_link_libraries(part9 rtow pthread)
+# set_property(TARGET part9 PROPERTY CXX_STANDARD 20)
+
+add_executable(part10 part10.cpp)
+target_link_libraries(part10 rtow pthread)
+set_property(TARGET part10 PROPERTY CXX_STANDARD 20)
